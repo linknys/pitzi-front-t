@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Device model:</strong>
+  <%= @order.device_model %>
+</p>
+
+<p>
+  <strong>Imei:</strong>
+  <%= @order.imei %>
+</p>
+
+<p>
+  <strong>Anual price:</strong>
+  <%= @order.anual_price %>
+</p>
+
+<p>
+  <strong>Installments:</strong>
+  <%= @order.installments %>
+</p>
+
+<%= link_to 'Edit', edit_order_path(@order) %> |
+<%= link_to 'Back', orders_path %>
