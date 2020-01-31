@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>PitziFrontT</title>
+    <title>Pitzi</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -10,6 +10,22 @@
   </head>
 
   <body>
-    <%= yield %>
+    <%= nav_bar brand: "Main", brand_link: root_url do %>
+      <%= menu_group do %>
+        <%= menu_item "Create Order", new_order_path %>
+      <% end %>
+      <%= menu_group do %>
+        <%= menu_item "Create User", new_user_path %>
+      <% end %>
+      <%= menu_group do %>
+        <%= menu_item "Orders", orders_path %>
+      <% end %>
+      <%= menu_group do %>
+        <%= menu_item "Users", users_path %>
+      <% end %>
+    <% end %>
+    <div class="container">
+      <%= yield %>
+    </div>
   </body>
 </html>
