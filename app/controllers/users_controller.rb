@@ -1,35 +1,36 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
+  require 'rest_client'
 
-  # GET /users
-  # GET /users.json
+  API_BASE_URL = "http://localhost:3000/api/v1"
+
   def index
-    @users = User.all
+    uri = "#{API_BASE_URL}/users.json"
+    rest_resource = RestClient::Resource.new(uri)
+    users = rest_resource.get 
+    @users = JSON.parse(users, :symbolize_names => true)
   end
 
-  # GET /users/1
-  # GET /users/1.json
-  def show
-  end
-
-  # GET /users/new
   def new
     @user = User.new
   end
 
-  # GET /users/1/edit
-  def edit
-  end
-
-  # POST /users
-  # POST /users.json
   def create
     @user = User.new(user_params)
-
     respond_to do |format|
-      if @user.save
-        format.html { redirect_to @user, notice: 'User was successfully created.' }
-        format.json { render :show, status: :created, location: @user }
+      if @user.valid?
+        uri = "#{API_BASE_URL}/users"
+        payload = params.to_json
+        rest_resource = RestClient::Resource.new(uri)
+        begin
+          resp = rest_resource.post payload , :content_type => "application/json"
+          format.html { redirect_to @user, notice: 'User was successfully created.' }
+          format.json { render :show, status: :created, location: @user }
+        rescue Exception => e
+          logger.debug resp
+          @user.errors.add(:fail, e)
+          format.html { render :new }
+          format.json { render json: @user.errors, status: :unprocessable_entity }
+        end
       else
         format.html { render :new }
         format.json { render json: @user.errors, status: :unprocessable_entity }
@@ -37,38 +38,20 @@ class UsersController < ApplicationController
     end
   end
 
-  # PATCH/PUT /users/1
-  # PATCH/PUT /users/1.json
-  def update
-    respond_to do |format|
-      if @user.update(user_params)
-        format.html { redirect_to @user, notice: 'User was successfully updated.' }
-        format.json { render :show, status: :ok, location: @user }
-      else
-        format.html { render :edit }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /users/1
-  # DELETE /users/1.json
   def destroy
-    @user.destroy
-    respond_to do |format|
-      format.html { redirect_to users_url, notice: 'User was successfully destroyed.' }
-      format.json { head :no_content }
+    uri = "#{API_BASE_URL}/users/#{params[:id]}"
+    rest_resource = RestClient::Resource.new(uri)
+    begin
+      rest_resource.delete
+      flash[:notice] = "User Deleted successfully"
+    rescue Exception => e
+      flash[:error] = "User Failed to Delete"
     end
+    redirect_to users_path
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_user
-      @user = User.find(params[:id])
-    end
-
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def user_params
-      params.require(:user).permit(:name, :email, :cpf)
-    end
+  def user_params
+    params.require(:user).permit(:name, :email, :cpf)
+  end
 end

@@ -10,19 +10,17 @@
             <td>Imei</td>
             <td>Anual price</td>
             <td>Installments</td>
-            <td colspan="3">
+            <td colspan="1">
         </tr>
     </thead>
     <tbody>
     <% @orders.each do |order| %>
         <tr>
-            <td><%= order.device_model %></td>
-            <td><%= order.imei %></td>
-            <td><%= order.anual_price %></td>
-            <td><%= order.installments %></td>
-            <td><%= link_to 'Show', order %></td>
-            <td><%= link_to 'Edit', edit_order_path(order) %></td>
-            <td><%= link_to 'Destroy', order, method: :delete, data: { confirm: "Are you sure you want to delete order #{order.device_model}?" } %></td>
+            <td><%= order[:device_model] %></td>
+            <td><%= order[:imei] %></td>
+            <td><%= order[:anual_price] %></td>
+            <td><%= order[:installments] %></td>
+            <td><%= link_to 'Destroy', order_path(order[:id]), method: :delete, data: { confirm: "Are you sure you want to delete order #{order[:device_model]}?" } %></td>
         <tr>
     <% end %>
     </tbody>
